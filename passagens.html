@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d5c63">
+  <title>Controle de Passagens</title>
+  <link rel="stylesheet" href="passagens.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-icon" aria-hidden="true">✈</span>
+        <div>
+          <p class="eyebrow">GESTÃO DE VENDAS</p>
+          <h1>Controle de Passagens</h1>
+        </div>
+      </div>
+      <button id="notificationButton" class="outline-button" type="button">Ativar alertas</button>
+    </header>
+
+    <section class="intro">
+      <div>
+        <p class="eyebrow">PAINEL DO DIA</p>
+        <h2>Todas as viagens organizadas em um lugar.</h2>
+        <p>Cadastre as compras e acompanhe os check-ins de ida e de volta sem perder prazo.</p>
+      </div>
+      <div class="next-alert" id="nextAlert" aria-live="polite"></div>
+    </section>
+
+    <section class="stats" aria-label="Resumo das passagens">
+      <article><span>Passagens cadastradas</span><strong id="totalTrips">0</strong></article>
+      <article><span>Check-ins pendentes</span><strong id="pendingCheckins">0</strong></article>
+      <article><span>Valor total</span><strong id="totalValue">R$ 0,00</strong></article>
+    </section>
+
+    <section class="content-grid">
+      <section class="card form-card">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">NOVA COMPRA</p>
+            <h2 id="formTitle">Cadastrar passagem</h2>
+          </div>
+          <button id="cancelEdit" class="text-button hidden" type="button">Cancelar edição</button>
+        </div>
+
+        <form id="tripForm">
+          <input id="tripId" type="hidden">
+          <div class="form-grid">
+            <label>Data da compra
+              <input id="purchaseDate" type="date" required>
+            </label>
+            <label>Valor pago (R$)
+              <input id="price" type="number" min="0" step="0.01" placeholder="Ex.: 1250,00" required>
+            </label>
+            <label class="wide">Destino
+              <input id="destination" type="text" placeholder="Ex.: São Paulo → Recife" required>
+            </label>
+            <label>Passageiro
+              <input id="passenger" type="text" placeholder="Nome completo" required>
+            </label>
+            <label>Cia aérea
+              <input id="airline" type="text" placeholder="Ex.: LATAM" required>
+            </label>
+            <label>Site da compra
+              <input id="purchaseSite" type="text" placeholder="Ex.: Decolar, site da cia" required>
+            </label>
+            <label>Assento
+              <input id="seat" type="text" placeholder="Ex.: 12A / 12B">
+            </label>
+            <label>Check-in de ida
+              <input id="outboundCheckin" type="datetime-local" required>
+            </label>
+            <label>Check-in de volta
+              <input id="returnCheckin" type="datetime-local" required>
+            </label>
+          </div>
+          <p class="form-note">O alerta será mostrado no horário informado. Mantenha esta página aberta para receber o aviso.</p>
+          <button class="primary-button" type="submit"><span id="submitLabel">Salvar passagem</span> <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
+      <section class="card list-card">
+        <div class="section-heading list-heading">
+          <div>
+            <p class="eyebrow">AGENDA DE VIAGENS</p>
+            <h2>Passagens cadastradas</h2>
+          </div>
+          <label class="search"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Buscar passageiro ou destino"></label>
+        </div>
+        <div id="tripList" class="trip-list" aria-live="polite"></div>
+      </section>
+    </section>
+  </main>
+
+  <template id="tripTemplate">
+    <article class="trip-item">
+      <div class="trip-main">
+        <div class="trip-title-row">
+          <h3 class="trip-destination"></h3>
+          <span class="trip-price"></span>
+        </div>
+        <p class="trip-passenger"></p>
+        <p class="trip-details"></p>
+      </div>
+      <div class="checkin-block">
+        <div class="checkin-row outbound-row"><span class="checkin-status"></span><div><small>CHECK-IN DE IDA</small><strong class="outbound-checkin"></strong></div></div>
+        <div class="checkin-row return-row"><span class="checkin-status"></span><div><small>CHECK-IN DE VOLTA</small><strong class="return-checkin"></strong></div></div>
+      </div>
+      <div class="trip-actions">
+        <button class="edit-button" type="button">Editar</button>
+        <button class="delete-button" type="button" aria-label="Excluir passagem">Excluir</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="passagens.js"></script>
+</body>
+</html>
