@@ -69,14 +69,20 @@
             <label>Assento
               <input id="seat" type="text" placeholder="Ex.: 12A / 12B">
             </label>
-            <label>Check-in de ida
+            <label>Data do voo de ida
+              <input id="outboundFlightDate" type="date" required>
+            </label>
+            <label>Data do voo de volta
+              <input id="returnFlightDate" type="date" required>
+            </label>
+            <label>Data e hora do check-in de ida
               <input id="outboundCheckin" type="datetime-local" required>
             </label>
-            <label>Check-in de volta
+            <label>Data e hora do check-in de volta
               <input id="returnCheckin" type="datetime-local" required>
             </label>
           </div>
-          <p class="form-note">O alerta será mostrado no horário informado. Mantenha esta página aberta para receber o aviso.</p>
+          <p class="form-note">O alerta local é mostrado 24 horas antes do check-in. Mantenha esta página aberta para receber o aviso.</p>
           <button class="primary-button" type="submit"><span id="submitLabel">Salvar passagem</span> <span aria-hidden="true">→</span></button>
         </form>
       </section>
@@ -103,6 +109,7 @@
         </div>
         <p class="trip-passenger"></p>
         <p class="trip-details"></p>
+        <p class="trip-flights"></p>
       </div>
       <div class="checkin-block">
         <div class="checkin-row outbound-row"><span class="checkin-status"></span><div><small>CHECK-IN DE IDA</small><strong class="outbound-checkin"></strong></div></div>

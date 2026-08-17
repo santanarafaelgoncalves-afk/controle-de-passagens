@@ -5,6 +5,7 @@ const fields = {
   destination: document.querySelector("#destination"), airline: document.querySelector("#airline"),
   purchaseSite: document.querySelector("#purchaseSite"), price: document.querySelector("#price"),
   passenger: document.querySelector("#passenger"), seat: document.querySelector("#seat"),
+  outboundFlightDate: document.querySelector("#outboundFlightDate"), returnFlightDate: document.querySelector("#returnFlightDate"),
   outboundCheckin: document.querySelector("#outboundCheckin"), returnCheckin: document.querySelector("#returnCheckin")
 };
 const formatMoney = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -12,8 +13,10 @@ const formatDate = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeSt
 
 function readTrips() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; } }
 function saveTrips(trips) { localStorage.setItem(STORAGE_KEY, JSON.stringify(trips)); }
-function checkinState(date) { return new Date(date) <= new Date() ? "due" : "pending"; }
+function reminderDate(date) { return new Date(new Date(date).getTime() - 24 * 60 * 60 * 1000); }
+function checkinState(date) { return reminderDate(date) <= new Date() ? "due" : "pending"; }
 function dateText(date) { return formatDate.format(new Date(date)); }
+function flightDateText(date) { return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(new Date(`${date}T12:00`)); }
 function currentTrips() { return readTrips().sort((a, b) => new Date(a.outboundCheckin) - new Date(b.outboundCheckin)); }
 
 function render() {
@@ -32,11 +35,12 @@ function render() {
       item.querySelector(".trip-price").textContent = formatMoney.format(trip.price);
       item.querySelector(".trip-passenger").textContent = trip.passenger;
       item.querySelector(".trip-details").textContent = `${trip.airline} • ${trip.purchaseSite}${trip.seat ? ` • Assento ${trip.seat}` : ""}`;
+      item.querySelector(".trip-flights").textContent = `Voo: ida ${flightDateText(trip.outboundFlightDate)} • volta ${flightDateText(trip.returnFlightDate)}`;
       ["outbound", "return"].forEach(type => {
         const row = item.querySelector(`.${type}-row`);
         const state = checkinState(trip[`${type}Checkin`]);
         row.classList.add(state);
-        row.querySelector(`.${type}-checkin`).textContent = state === "due" ? `Prazo: ${dateText(trip[`${type}Checkin`])}` : dateText(trip[`${type}Checkin`]);
+        row.querySelector(`.${type}-checkin`).textContent = state === "due" ? `Lembrete: faça o check-in (${dateText(trip[`${type}Checkin`])})` : `Check-in: ${dateText(trip[`${type}Checkin`])}`;
       });
       item.querySelector(".edit-button").addEventListener("click", () => editTrip(trip.id));
       item.querySelector(".delete-button").addEventListener("click", () => deleteTrip(trip.id));
@@ -48,13 +52,13 @@ function render() {
 
 function renderSummary(trips) {
   document.querySelector("#totalTrips").textContent = trips.length;
-  const pending = trips.flatMap(t => [t.outboundCheckin, t.returnCheckin]).filter(d => new Date(d) > new Date()).length;
+  const pending = trips.flatMap(t => [t.outboundCheckin, t.returnCheckin]).filter(d => reminderDate(d) > new Date()).length;
   document.querySelector("#pendingCheckins").textContent = pending;
   document.querySelector("#totalValue").textContent = formatMoney.format(trips.reduce((sum, t) => sum + Number(t.price), 0));
   const future = trips.flatMap(t => [
     { date: t.outboundCheckin, type: "ida", trip: t }, { date: t.returnCheckin, type: "volta", trip: t }
-  ]).filter(x => new Date(x.date) > new Date()).sort((a,b) => new Date(a.date) - new Date(b.date))[0];
-  document.querySelector("#nextAlert").innerHTML = future ? `<span>PRÓXIMO CHECK-IN</span><strong>${future.trip.passenger} · ${future.type}</strong><span>${future.trip.destination}<br>${dateText(future.date)}</span>` : (trips.length ? "Não há check-ins futuros." : "Cadastre uma passagem para acompanhar o próximo check-in.");
+  ]).filter(x => reminderDate(x.date) > new Date()).sort((a,b) => reminderDate(a.date) - reminderDate(b.date))[0];
+  document.querySelector("#nextAlert").innerHTML = future ? `<span>PRÓXIMO LEMBRETE</span><strong>${future.trip.passenger} · ${future.type}</strong><span>${future.trip.destination}<br>24h antes: ${dateText(reminderDate(future.date))}</span>` : (trips.length ? "Não há lembretes futuros." : "Cadastre uma passagem para acompanhar o próximo check-in.");
 }
 
 function normalizeForm() { return Object.fromEntries(Object.entries(fields).map(([key, input]) => [key, input.value.trim()])); }
@@ -92,9 +96,9 @@ function checkDueCheckins() {
   const due = currentTrips().flatMap(t => [
     { key: `${t.id}-outbound`, date: t.outboundCheckin, trip: t, label: "ida" },
     { key: `${t.id}-return`, date: t.returnCheckin, trip: t, label: "volta" }
-  ]).filter(x => new Date(x.date) <= new Date() && !notified.includes(x.key));
+  ]).filter(x => reminderDate(x.date) <= new Date() && !notified.includes(x.key));
   due.forEach(alertItem => {
-    if ("Notification" in window && Notification.permission === "granted") new Notification("Hora de fazer o check-in!", { body: `${alertItem.trip.passenger} — ${alertItem.label} para ${alertItem.trip.destination}` });
+    if ("Notification" in window && Notification.permission === "granted") new Notification("Check-in amanhã!", { body: `${alertItem.trip.passenger} — faça o check-in de ${alertItem.label} para ${alertItem.trip.destination}` });
     notified.push(alertItem.key);
   });
   localStorage.setItem(`${STORAGE_KEY}_notified`, JSON.stringify(notified));
