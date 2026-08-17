@@ -17,7 +17,11 @@
           <h1>Controle de Passagens</h1>
         </div>
       </div>
-      <button id="notificationButton" class="outline-button" type="button">Ativar alertas</button>
+      <div class="header-actions">
+        <span id="sessionStatus" class="session-status">Conectando...</span>
+        <button id="notificationButton" class="outline-button" type="button">Ativar alertas</button>
+        <button id="signOutButton" class="text-button hidden" type="button">Sair</button>
+      </div>
     </header>
 
     <section class="intro">
@@ -33,6 +37,20 @@
       <article><span>Passagens cadastradas</span><strong id="totalTrips">0</strong></article>
       <article><span>Check-ins pendentes</span><strong id="pendingCheckins">0</strong></article>
       <article><span>Valor total</span><strong id="totalValue">R$ 0,00</strong></article>
+    </section>
+
+    <section id="authGate" class="card auth-card hidden" aria-live="polite">
+      <div>
+        <p class="eyebrow">ACESSO PROTEGIDO</p>
+        <h2>Entre para acessar suas passagens</h2>
+        <p>Os registros ficam salvos no banco online e só aparecem para a conta que os criou.</p>
+      </div>
+      <form id="authForm" class="auth-form">
+        <input id="authEmail" type="email" placeholder="Seu e-mail" autocomplete="email" required>
+        <input id="authPassword" type="password" placeholder="Senha" autocomplete="current-password" minlength="6" required>
+        <button class="primary-button" type="submit">Entrar</button>
+        <button id="signUpButton" class="outline-button" type="button">Criar conta</button>
+      </form>
     </section>
 
     <section class="content-grid">
@@ -84,6 +102,9 @@
             <label>Data e hora do check-in de volta
               <input id="returnCheckin" type="datetime-local" required>
             </label>
+            <label class="wide">Gmail para receber o lembrete
+              <input id="reminderEmail" type="email" placeholder="Ex.: paicompra@gmail.com" required>
+            </label>
           </div>
           <p class="form-note">O alerta local é mostrado 24 horas antes do check-in. Mantenha esta página aberta para receber o aviso.</p>
           <button class="primary-button" type="submit"><span id="submitLabel">Salvar passagem</span> <span aria-hidden="true">→</span></button>
@@ -125,6 +146,6 @@
     </article>
   </template>
 
-  <script src="passagens.js"></script>
+  <script type="module" src="passagens.js"></script>
 </body>
 </html>
