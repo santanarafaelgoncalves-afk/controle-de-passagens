@@ -2,7 +2,7 @@ const STORAGE_KEY = "controle_passagens_v1";
 const form = document.querySelector("#tripForm");
 const fields = {
   id: document.querySelector("#tripId"), purchaseDate: document.querySelector("#purchaseDate"),
-  destination: document.querySelector("#destination"), airline: document.querySelector("#airline"),
+  destination: document.querySelector("#destination"), airline: document.querySelector("#airline"), flightCode: document.querySelector("#flightCode"),
   purchaseSite: document.querySelector("#purchaseSite"), price: document.querySelector("#price"),
   passenger: document.querySelector("#passenger"), seat: document.querySelector("#seat"),
   outboundFlightDate: document.querySelector("#outboundFlightDate"), returnFlightDate: document.querySelector("#returnFlightDate"),
@@ -34,7 +34,7 @@ function render() {
       item.querySelector(".trip-destination").textContent = trip.destination;
       item.querySelector(".trip-price").textContent = formatMoney.format(trip.price);
       item.querySelector(".trip-passenger").textContent = trip.passenger;
-      item.querySelector(".trip-details").textContent = `${trip.airline} • ${trip.purchaseSite}${trip.seat ? ` • Assento ${trip.seat}` : ""}`;
+      item.querySelector(".trip-details").textContent = `${trip.airline}${trip.flightCode ? ` • ${trip.flightCode}` : ""} • ${trip.purchaseSite}${trip.seat ? ` • Assento ${trip.seat}` : ""}`;
       item.querySelector(".trip-flights").textContent = `Voo: ida ${flightDateText(trip.outboundFlightDate)} • volta ${flightDateText(trip.returnFlightDate)}`;
       ["outbound", "return"].forEach(type => {
         const row = item.querySelector(`.${type}-row`);
